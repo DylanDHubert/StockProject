@@ -57,7 +57,7 @@ function generateHistograms(stockData, binSize) {
 }
 
 // SAVE AS .JSON FILE
-fs.readFile('stockData.json', 'utf-8', (err, data) => {
+fs.readFile('data/stockData.json', 'utf-8', (err, data) => {
     if (err) {
         console.error('Error reading stock data:', err);
         return;
@@ -73,7 +73,7 @@ fs.readFile('stockData.json', 'utf-8', (err, data) => {
         console.log(histograms);
         
         // SAVE
-        fs.writeFile('histograms.json', JSON.stringify(histograms, null, 2), (writeErr) => {
+        fs.writeFile('data/histograms.json', JSON.stringify(histograms, null, 2), (writeErr) => {
             if (writeErr) {
                 console.error('Error writing histograms to file:', writeErr);
             } else {

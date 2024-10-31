@@ -68,7 +68,7 @@ async function getStockDataForSymbols(symbols) {
     const stockData = await getStockDataForSymbols(stockSymbols);
     
     // SAVE AS .JSON
-    fs.writeFileSync('stockData.json', JSON.stringify(stockData, null, 2));
+    fs.writeFileSync('data/stockData.json', JSON.stringify(stockData, null, 2));
 
     console.log('Stock data has been saved to stockData.json');
 })();

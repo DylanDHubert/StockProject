@@ -15,7 +15,7 @@
     console.log("Loading histograms...");
 
     // GET HIST.JSON
-    fetch('histograms.json')
+    fetch('../data/histograms.json')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
