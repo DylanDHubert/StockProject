@@ -1,10 +1,10 @@
 const fs = require('fs');
 
-// Helper function to group stock prices by timestamp
+// GROUP STOCKS BY TIMESTAMP
 function groupByTimestamp(stockData) {
     const groupedData = {};
 
-    // Loop through each stock
+    // FOR EACH STOCK
     Object.keys(stockData).forEach(stockSymbol => {
         stockData[stockSymbol].forEach(dataPoint => {
             const { timestamp, close } = dataPoint;
@@ -18,16 +18,16 @@ function groupByTimestamp(stockData) {
     return groupedData;
 }
 
-// Helper function to create a histogram from stock prices
+// HISTOGRAM GENErATION
 function createHistogram(stockPrices, binSize = 50) {
     const minPrice = Math.min(...stockPrices);
     const maxPrice = Math.max(...stockPrices);
 
-    // Calculate the number of bins based on bin size
+    // BINS
     const numBins = Math.ceil((maxPrice - minPrice) / binSize);
     const bins = new Array(numBins).fill(0);
 
-    // Bin the stock prices
+    // PRICES FOR BINS
     stockPrices.forEach(price => {
         const binIndex = Math.floor((price - minPrice) / binSize);
         bins[binIndex]++;
@@ -41,7 +41,7 @@ function createHistogram(stockPrices, binSize = 50) {
     };
 }
 
-// Main function to process all timestamps and generate histograms
+// MAIN
 function generateHistograms(stockData, binSize) {
     const groupedData = groupByTimestamp(stockData);
 
@@ -56,7 +56,7 @@ function generateHistograms(stockData, binSize) {
     return histograms;
 }
 
-// Read stock data from JSON file
+// SAVE AS .JSON FILE
 fs.readFile('stockData.json', 'utf-8', (err, data) => {
     if (err) {
         console.error('Error reading stock data:', err);
@@ -66,13 +66,13 @@ fs.readFile('stockData.json', 'utf-8', (err, data) => {
     try {
         const stockData = JSON.parse(data);
         
-        // Generate the histograms (using a bin size of 50 as an example)
+        // MAKE HISTOGRAMS WITH 50 BINS
         const histograms = generateHistograms(stockData, 50);
         
-        // Output the histograms for each timestamp
+        // PRINT HISTOGRAMS
         console.log(histograms);
         
-        // Save histograms to a JSON file
+        // SAVE
         fs.writeFile('histograms.json', JSON.stringify(histograms, null, 2), (writeErr) => {
             if (writeErr) {
                 console.error('Error writing histograms to file:', writeErr);

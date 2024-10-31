@@ -1,6 +1,7 @@
 const axios = require('axios');
 const fs = require('fs');
 
+//API KEY FOR SCRAPING STOCK DATA
 const API_KEY = 'B333XAEIW0ZNO74Q';
 const stockSymbols = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "BRKB", "TSM", "CSCO",
@@ -13,29 +14,29 @@ const stockSymbols = [
     "CDK", "DOV", "ADSK", "MCHP", "WDC", "ZUMZ", "DG", "RNG", "TTD"
 ];
 
-const INTERVAL = '30min'; // 30 minute intervals
-const TIME_SERIES_URL = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY';
+const INTERVAL = '30min'; // TEMPORAL FREQUENCY
+const TIME_SERIES_URL = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY'; // DATASET
 
-// Function to fetch stock data
+// GET STOCK DATA [SINGLE SYMBOL]
 async function fetchStockData(symbol) {
     try {
         const url = `${TIME_SERIES_URL}&symbol=${symbol}&interval=${INTERVAL}&apikey=${API_KEY}`;
         const response = await axios.get(url);
         const data = response.data;
 
-        // Extract the time series
+        // UNPACK RESPONSE DATA
         const timeSeries = data['Time Series (30min)'];
 
-        // Check if timeSeries exists before processing
+        // EXISTS?
         if (!timeSeries) {
             console.warn(`No time series data for ${symbol}`);
             return [];
         }
 
-        // Get the last 48 data points (since we need past 24 hours at 30-minute intervals)
+        // GET LAST 48 (LAST DAY)
         const entries = Object.entries(timeSeries).slice(0, 48);
 
-        // Map the data points (timestamp, close price)
+        // MAP TIMESTAMP AND CLOSE
         const stockPrices = entries.map(([timestamp, values]) => {
             return {
                 timestamp,
@@ -50,7 +51,7 @@ async function fetchStockData(symbol) {
     }
 }
 
-// Function to get stock data for multiple symbols
+// GET STOCK DATA [MULTI SYMBOL]
 async function getStockDataForSymbols(symbols) {
     const stockData = {};
 
@@ -62,11 +63,11 @@ async function getStockDataForSymbols(symbols) {
     return stockData;
 }
 
-// Main function to fetch stock data and save it to a JSON file
+// MAIN
 (async () => {
     const stockData = await getStockDataForSymbols(stockSymbols);
     
-    // Save the stock data to a JSON file
+    // SAVE AS .JSON
     fs.writeFileSync('stockData.json', JSON.stringify(stockData, null, 2));
 
     console.log('Stock data has been saved to stockData.json');
