@@ -3,27 +3,20 @@ USING NODE & NPM:
 `
 
 `
-npm install axios
+npm install axios express
 `
 
+GENERATE NECESSARY DATA
 `
-node scripts/stock.js
-`
-
-`
-node scripts/hist.js
+node scripts/main.js
 `
 
+RUN SERVER (FOR VISUALIZATION SCRIPT)
 `
-python -m http.server 8000
-`
-
-`
-OPEN: http://localhost:8000/templates/index.html
+python -m http.server PORT
 `
 
-![PREVIEW](<Screen Shot 2024-10-31 at 12.28.35 PM.png>)
-
+VIEW AT:
 `
-TO–DO NEXT: CUSTOM STATIC VISUAL WITH P5JS
+http://localhost:PORT/
 `
