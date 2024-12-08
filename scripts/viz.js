@@ -1,49 +1,48 @@
-let histograms; // STORE HISTOGRAM DATA
-let timestamps; // TIMESTAMP KEYS
-let binSize = 50; // SIZE OF EACH BIN
-let cubeSize = 500; // SIZE OF CUBE
-let spacing = 10; // SPACING BETWEEN BOXES
-let boxHeightScale = 5; // SCALE HEIGHT OF BOXES FOR VISUALIZATION
+// LOAD JSON DATA
+let histograms = {}; // HISTOGRAM DATA
 
 function preload() {
-    // LOAD HISTOGRAM DATA
-    histograms = loadJSON('data/histograms.json');
+  // LOAD JSON FILE
+  loadJSON('data/histograms.json', data => {
+    histograms = data;
+  });
 }
 
 function setup() {
-    createCanvas(800, 800, WEBGL);
-    noStroke();
-    timestamps = Object.keys(histograms); // EXTRACT TIMESTAMPS
+  createCanvas(800, 800, WEBGL);
+  noStroke();
+  stroke(255);
 }
 
 function draw() {
-    background(30);
-    orbitControl(); // ENABLE ORBITAL CAMERA CONTROLS
+  background(30);
+  orbitControl(); // ENABLE ORBIT CAMERA CONTROLS
 
-    // CENTER THE ORIGIN
-    translate(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
+  const timestamps = Object.keys(histograms);
 
-    let sliceDepth = cubeSize / timestamps.length; // DEPTH OF EACH TIMESTAMP SLICE
+  const gridSize = 500; // SQUARE GRID
+  const boxSize = gridSize / 48; // BOX SIZE FOR FIXED WIDTH (48 BINS)
+  const depthSize = gridSize / 48; // BOX SIZE FOR FIXED DEPTH (48 TIMESTAMPS)
 
-    timestamps.forEach((timestamp, tIndex) => {
-        let histogram = histograms[timestamp]; // GET HISTOGRAM FOR CURRENT TIMESTAMP
-        let bins = histogram.bins;
-        let binWidth = (cubeSize - bins.length * spacing) / bins.length; // WIDTH OF EACH BIN
+  translate(-gridSize / 2, -gridSize / 2, -gridSize / 2);
 
-        bins.forEach((freq, bIndex) => {
-            // POSITION BOX
-            let x = bIndex * (binWidth + spacing);
-            let z = tIndex * sliceDepth;
+  timestamps.forEach((timestamp, tIndex) => {
+    const histogram = histograms[timestamp];
+    const bins = histogram.bins;
 
-            // BOX HEIGHT BASED ON FREQUENCY
-            let boxHeight = freq * boxHeightScale;
+    bins.forEach((freq, bIndex) => {
+      const x = bIndex * boxSize;
+      const z = tIndex * depthSize;
 
-            // DRAW BOX
-            push();
-            translate(x, cubeSize - boxHeight / 2, z); // ADJUST FOR BASE ALIGNMENT
-            ambientMaterial(150, 100, 250); // SET BOX COLOR
-            box(binWidth, boxHeight, sliceDepth - spacing);
-            pop();
-        });
+      const boxHeight = freq * 0.5; // SCALE HEIGHT
+
+      push();
+      translate(x + boxSize / 2, gridSize - boxHeight / 2, z + depthSize / 2);
+
+      strokeWeight(1);
+      ambientMaterial(120, 100, 250); // BOX COLOR
+      box(boxSize, 100 * boxHeight, depthSize);
+      pop();
     });
+  });
 }

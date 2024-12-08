@@ -1,17 +1,14 @@
-`
-USING NODE & NPM:
-`
-
+PACKAGES:
 `
 npm install axios express
 `
 
-GENERATE NECESSARY DATA
+GENERATE NECESSARY DATA: 
 `
 node scripts/main.js
 `
 
-RUN SERVER (FOR VISUALIZATION SCRIPT)
+RUN SERVER:
 `
 python -m http.server PORT
 `
