@@ -24,6 +24,8 @@ async function fetchStockData(symbol) {
         const response = await axios.get(url);
         const data = response.data;
 
+        console.log(data)
+
         // UNPACK RESPONSE DATA
         const timeSeries = data['Time Series (30min)'];
 
@@ -35,11 +37,17 @@ async function fetchStockData(symbol) {
         // GET LAST 48 (LAST DAY)
         const entries = Object.entries(timeSeries).slice(0, 48);
 
-        // MAP TIMESTAMP AND CLOSE
-        return entries.map(([timestamp, values]) => ({
-            timestamp,
-            close: parseFloat(values['4. close']),
-        }));
+        // CALCULATE PERCENTAGE CHANGE
+        return entries.map(([timestamp, values]) => {
+            const open = parseFloat(values['1. open']);
+            const close = parseFloat(values['4. close']);
+            const percentChange = ((close - open) / open) * 100;
+
+            return {
+                timestamp,
+                percentChange,
+            };
+        });
     } catch (error) {
         console.error(`Error fetching data for ${symbol}:`, error);
         return [];
@@ -63,11 +71,11 @@ function groupByTimestamp(stockData) {
     const groupedData = {};
 
     Object.keys(stockData).forEach(stockSymbol => {
-        stockData[stockSymbol].forEach(({ timestamp, close }) => {
+        stockData[stockSymbol].forEach(({ timestamp, percentChange }) => {
             if (!groupedData[timestamp]) {
                 groupedData[timestamp] = [];
             }
-            groupedData[timestamp].push(close);
+            groupedData[timestamp].push(percentChange);
         });
     });
 
@@ -75,22 +83,22 @@ function groupByTimestamp(stockData) {
 }
 
 // HISTOGRAM GENERATION
-function createHistogram(stockPrices, binSize = 50) {
-    const minPrice = Math.min(...stockPrices);
-    const maxPrice = Math.max(...stockPrices);
+function createHistogram(percentChanges, binSize = 1) {
+    const minChange = Math.min(...percentChanges);
+    const maxChange = Math.max(...percentChanges);
 
-    const numBins = Math.ceil((maxPrice - minPrice) / binSize);
+    const numBins = Math.ceil((maxChange - minChange) / binSize);
     const bins = new Array(numBins).fill(0);
 
-    stockPrices.forEach(price => {
-        const binIndex = Math.floor((price - minPrice) / binSize);
+    percentChanges.forEach(change => {
+        const binIndex = Math.floor((change - minChange) / binSize);
         bins[binIndex]++;
     });
 
     return {
         bins,
-        minPrice,
-        maxPrice,
+        minChange,
+        maxChange,
         binSize
     };
 }
@@ -100,8 +108,8 @@ function generateHistograms(stockData, binSize) {
 
     const histograms = {};
     Object.keys(groupedData).forEach(timestamp => {
-        const stockPrices = groupedData[timestamp];
-        histograms[timestamp] = createHistogram(stockPrices, binSize);
+        const percentChanges = groupedData[timestamp];
+        histograms[timestamp] = createHistogram(percentChanges, binSize);
     });
 
     return histograms;
@@ -116,7 +124,7 @@ function generateHistograms(stockData, binSize) {
     fs.writeFileSync('data/stockData.json', JSON.stringify(stockData, null, 2));
 
     console.log('Generating histograms...');
-    const histograms = generateHistograms(stockData, 50);
+    const histograms = generateHistograms(stockData, 1);
 
     console.log('Saving histograms to file...');
     fs.writeFileSync('data/histograms.json', JSON.stringify(histograms, null, 2));
