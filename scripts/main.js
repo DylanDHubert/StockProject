@@ -3,6 +3,7 @@ const fs = require('fs');
 
 // API KEY FOR SCRAPING STOCK DATA
 const API_KEY = 'B333XAEIW0ZNO74Q';
+
 const stockSymbols = [
     "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "BRKB", "TSM", "CSCO",
     "CMCSA", "AMGN", "QCOM", "INTC", "ADBE", "AVGO", "NFLX", "PEP", "SBUX", "TXN",
