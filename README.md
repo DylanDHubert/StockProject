@@ -18,6 +18,11 @@ VIEW AT:
 http://localhost:PORT/
 `
 
+`
+GOOGLEFINANCE
+`
+
+
 FILES & DOCUMENTATION:
 
      /SCRIPTS/MAIN.js
